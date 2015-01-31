@@ -21,13 +21,12 @@ namespace StringFormat.Tests
             string output;
             Assert.IsTrue(StringFormat.TryFormat("{0},{1},{2}", out output, "a", "b", "c"));
             Assert.AreEqual("a,b,c", output);
-            Assert.IsTrue(StringFormat.TryFormat("{0},{1},{2}", out output, "a", "b"));
+            Assert.IsFalse(StringFormat.TryFormat("{0},{1},{2}", out output, "a", "b"));
             Assert.AreEqual("a,b,null", output);
             Assert.IsTrue(StringFormat.TryFormat("{0},{1},{2}", out output, "a", "b", "c", "d"));
             Assert.AreEqual("a,b,c", output);
             Assert.IsTrue(StringFormat.TryFormat("{{0}},{1},{2}", out output, "a", "b", "c"));
             Assert.AreEqual("{0},b,c", output);
-
         }
     }
 }

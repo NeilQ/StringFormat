@@ -182,6 +182,7 @@ namespace StringFormat
         public static Boolean TryFormat(String format, out String result, params Object[] args)
         {
             result = format;
+            bool flag = true;
             if (format == null || args == null)
             {
                 return false;
@@ -229,9 +230,10 @@ namespace StringFormat
                 {
                     index = index * 10 + ch - '0';
                     pos++;
-                    if (pos == len) return false;
+                    if (pos == len) flag = false;
                     ch = format[pos];
                 } while (ch >= '0' && ch <= '9' && index < 1000000);
+                if (index >= args.Length) flag = false;
                 while (pos < len && (ch = format[pos]) == ' ') pos++;
                 bool leftJustify = false;
                 int width = 0;
@@ -240,21 +242,21 @@ namespace StringFormat
                     pos++;
                     while (pos < len && format[pos] == ' ') pos++;
 
-                    if (pos == len) return false;
+                    if (pos == len) flag = false;
                     ch = format[pos];
                     if (ch == '-')
                     {
                         leftJustify = true;
                         pos++;
-                        if (pos == len) return false;
+                        if (pos == len) flag = false;
                         ch = format[pos];
                     }
-                    if (ch < '0' || ch > '9') return false;
+                    if (ch < '0' || ch > '9') flag = false;
                     do
                     {
                         width = width * 10 + ch - '0';
                         pos++;
-                        if (pos == len) return false;
+                        if (pos == len) flag = false;
                         ch = format[pos];
                     } while (ch >= '0' && ch <= '9' && width < 1000000);
                 }
@@ -265,13 +267,14 @@ namespace StringFormat
                 {
                     arg = args[index];
                 }
+
                 StringBuilder fmt = null;
                 if (ch == ':')
                 {
                     pos++;
                     while (true)
                     {
-                        if (pos == len) return false;
+                        if (pos == len) flag = false;
                         ch = format[pos];
                         pos++;
                         if (ch == '{')
@@ -279,7 +282,7 @@ namespace StringFormat
                             if (pos < len && format[pos] == '{')  // Treat as escape character for {{
                                 pos++;
                             else
-                                return false;
+                                flag = false;
                         }
                         else if (ch == '}')
                         {
@@ -321,7 +324,7 @@ namespace StringFormat
                 if (leftJustify && pad > 0) sb.Append(' ', pad);
             }
             result = sb.ToString();
-            return true;
+            return flag;
         }
     }
 }
